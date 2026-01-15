@@ -26,7 +26,7 @@ let SMOOTH_ITERATIONS = 2;
 // =====================================================
 
 function preload() {
-  gloria = loadImage("gloria_pickle.jpg");
+  gloria = loadImage("../data/pictures/image-1--no-bg.jpg");
 }
 
 // =====================================================
@@ -34,7 +34,7 @@ function preload() {
 // =====================================================
 
 function setup() {
-  createCanvas(600, 532);
+  createCanvas(1200, 700);
   pixelDensity(1);
 
   generateRandomPoints(6000);
