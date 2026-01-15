@@ -4,7 +4,7 @@
 
 let points = [];
 let delaunay, voronoi;
-let gloria;
+let picture;
 
 let isStippling = true;
 
@@ -26,7 +26,7 @@ let SMOOTH_ITERATIONS = 2;
 // =====================================================
 
 function preload() {
-  gloria = loadImage("../data/pictures/image-1--no-bg.jpg");
+  picture = loadImage("../data/pictures/image-4.jpg");
 }
 
 // =====================================================
@@ -34,7 +34,7 @@ function preload() {
 // =====================================================
 
 function setup() {
-  createCanvas(1200, 700);
+  createCanvas(picture.width, picture.height);
   pixelDensity(1);
 
   generateRandomPoints(6000);
@@ -42,6 +42,7 @@ function setup() {
   delaunay = calculateDelaunay(points);
   voronoi = delaunay.voronoi([0, 0, width, height]);
 }
+
 
 // =====================================================
 // DRAW
@@ -87,7 +88,7 @@ function generateRandomPoints(n) {
   for (let i = 0; i < n; i++) {
     let x = random(width);
     let y = random(height);
-    let col = gloria.get(x, y);
+    let col = picture.get(x, y);
     if (random(100) > brightness(col)) {
       points.push(createVector(x, y));
     } else {
@@ -106,13 +107,13 @@ function updatePoints() {
   let centroids = Array(points.length).fill().map(() => createVector(0, 0));
   let weights = Array(points.length).fill(0);
 
-  gloria.loadPixels();
+  picture.loadPixels();
   let idx = 0;
 
   for (let x = 0; x < width; x++) {
     for (let y = 0; y < height; y++) {
       let i = (x + y * width) * 4;
-      let bright = (gloria.pixels[i] + gloria.pixels[i + 1] + gloria.pixels[i + 2]) / 3;
+      let bright = (picture.pixels[i] + picture.pixels[i + 1] + picture.pixels[i + 2]) / 3;
       let w = 1 - bright / 255;
 
       idx = delaunay.find(x, y, idx);
@@ -143,7 +144,7 @@ function calculateDelaunay(points) {
 function getIntensity(v) {
   let x = constrain(floor(v.x), 0, width - 1);
   let y = constrain(floor(v.y), 0, height - 1);
-  let c = gloria.get(x, y);
+  let c = picture.get(x, y);
   return (red(c) + green(c) + blue(c)) / 3;
 }
 
