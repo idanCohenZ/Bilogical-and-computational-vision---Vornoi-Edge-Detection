@@ -26,7 +26,7 @@ let SMOOTH_ITERATIONS = 2;
 // =====================================================
 
 function preload() {
-  picture = loadImage("../data/pictures/image-4.jpg");
+  picture = loadImage("../data/pictures/image-5.jpg");
 }
 
 // =====================================================
@@ -34,10 +34,15 @@ function preload() {
 // =====================================================
 
 function setup() {
+  randomSeed(1234);
+  noiseSeed(1234);
+
   createCanvas(picture.width, picture.height);
   pixelDensity(1);
 
-  generateRandomPoints(6000);
+  // generateRandomPoints(10000);
+  // generateGridPoints(5)
+  generateArrangedGridPoints(5)
 
   delaunay = calculateDelaunay(points);
   voronoi = delaunay.voronoi([0, 0, width, height]);
@@ -64,7 +69,8 @@ function draw() {
     computeAdaptiveParameters();
     applyHysteresis();
     buildEdgeChains();
-    smoothEdgeChains();
+    smoothEdgeChains();        // geometric refinement
+    mergeCloseContours();      // topological consolidation
     displaySmoothedEdges();
   }
 }
@@ -83,6 +89,41 @@ function mousePressed() {
 // =====================================================
 // STAGE 1 — CVT STIPPLING
 // =====================================================
+
+function generateArrangedGridPoints(step) {
+  points = [];
+  picture.loadPixels();
+
+  for (let y = 0; y < height; y += step) {
+    for (let x = 0; x < width; x += step) {
+      points.push(createVector(x, y));
+    }
+  }
+}
+
+
+function generateGridPoints(step) {
+  points = [];
+  picture.loadPixels();
+
+  for (let y = 0; y < height; y += step) {
+    for (let x = 0; x < width; x += step) {
+      let i = (x + y * width) * 4;
+      let bright =
+        (picture.pixels[i] +
+         picture.pixels[i + 1] +
+         picture.pixels[i + 2]) / 3;
+
+      // darker pixels → higher probability
+      let p = 1 - bright / 255;
+
+      if (random() / 2 < p) {
+        points.push(createVector(x, y));
+      }
+    }
+  }
+}
+
 
 function generateRandomPoints(n) {
   for (let i = 0; i < n; i++) {
