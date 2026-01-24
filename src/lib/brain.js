@@ -26,7 +26,7 @@ let SMOOTH_ITERATIONS = 2;
 // =====================================================
 
 function preload() {
-  picture = loadImage("../data/pictures/image-5.jpg");
+  picture = loadImage("../../data/pictures/image-5.jpg");
 }
 
 // =====================================================
@@ -40,9 +40,9 @@ function setup() {
   createCanvas(picture.width, picture.height);
   pixelDensity(1);
 
-  // generateRandomPoints(10000);
+  generateRandomPoints(6000);
   // generateGridPoints(5)
-  generateArrangedGridPoints(5)
+  // generateArrangedGridPoints(5)
 
   delaunay = calculateDelaunay(points);
   voronoi = delaunay.voronoi([0, 0, width, height]);
@@ -70,7 +70,6 @@ function draw() {
     applyHysteresis();
     buildEdgeChains();
     smoothEdgeChains();        // geometric refinement
-    mergeCloseContours();      // topological consolidation
     displaySmoothedEdges();
   }
 }

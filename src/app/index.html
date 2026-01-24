@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>head_one</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-delaunay@6"></script>
+</head>
+<body style="flex-direction: column;">
+    <h1>head_two</h1>
+    <div class="app-container">
+        <div class="preview-grid">
+            <div class="canvas-card-headline">
+                <label>original image</label>
+                <div class="canvas-card" id="dropZone">
+                    <div style="width: 100%">
+                        <button id="resetBtn" class="reset-btn" onclick="resetImage()">&times;</button>
+                    </div>
+                    <div id="uploadArea" class="upload-area" onclick="document.getElementById('upload').click()">
+                        <p>לחץ כאן להעלאת תמונה</p>
+                        <span class="file-format">JPG, PNG, WEBP</span>
+                        <input type="file" id="upload" accept="image/*" style="display: none;">
+                    </div>
+                    <canvas id="sourceCanvas" style="display: none;"></canvas>
+                </div>
+            </div>
+            <div class="canvas-card-headline">
+                <label>output image</label>
+                <div class="canvas-card" id="result-canvas">
+                    <div style="width: 100%">
+                        <button id="downloadBtn" class="download-btn" onclick="downloadImage()">↓</button>
+                    </div>
+                    <canvas id="outputCanvas"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="buttons-group">
+            <button onclick="applyEffect('filter1')">פילטר 1</button>
+            <button onclick="applyEffect('filter2')">פילטר 2</button>
+            <button onclick="applyEffect('filter3')">פילטר 3</button>
+            <button onclick="applyEffect('filter4')">פילטר 4</button>
+            <button onclick="applyEffect('filter5')">פילטר 5</button>
+        </div>
+    </div>
+
+<script src="../lib/functions.js"></script>
+<script src="../lib/brain.js"></script>
+</body>
+</html>
