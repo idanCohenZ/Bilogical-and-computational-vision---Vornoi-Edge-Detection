@@ -2,6 +2,7 @@
 /**
  * Global variables for DOM elements and Contexts
  */
+const D3_CANVAS_ID = 'defaultCanvas0'
 const uploadInput = document.getElementById('upload');
 const uploadArea = document.getElementById('uploadArea');
 const sourceCanvas = document.getElementById('sourceCanvas');
@@ -137,5 +138,7 @@ function runFilter5(imageData) {
 function setPicture(source) {
     loadImage(source, img => {
       window.setPicture(img);
+      const d3Canvas = document.getElementById(D3_CANVAS_ID);
+      console.log(d3Canvas)
     });
 }

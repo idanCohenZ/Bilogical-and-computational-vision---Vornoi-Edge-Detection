@@ -46,7 +46,10 @@ function setup() {
   randomSeed(ARBITRARY_RANDOMNESS_SEED);
   noiseSeed(ARBITRARY_RANDOMNESS_SEED);
 
-  createCanvas(1024, 512); // Default values
+  canvas = createCanvas(1024, 512); // Default values
+  canvas.id("vornoi-canvas");
+  canvas.parent("result-canvas")
+
   pixelDensity(1);
 
   delaunay = calculateDelaunay(points);
@@ -68,8 +71,6 @@ function draw() {
     text("Waiting for image…", width / 2, height / 2);
     return;
   }
-
-  console.log(">>>> initialized", initialized)
 
   if (!initialized) {
     initWithPicture();
