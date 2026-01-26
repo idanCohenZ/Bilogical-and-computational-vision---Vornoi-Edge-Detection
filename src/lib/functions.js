@@ -1,3 +1,4 @@
+
 /**
  * Global variables for DOM elements and Contexts
  */
@@ -36,6 +37,7 @@ uploadInput.addEventListener('change', function (e) {
                 downloadBtn.style.display = 'block';
             };
             img.src = event.target.result;
+            setPicture(img.src)
         };
         reader.readAsDataURL(this.files[0]);
     }
@@ -130,4 +132,12 @@ function runFilter4(imageData) {
 function runFilter5(imageData) {
     console.log("Applying Filter 5...");
     // Add your logic here
+}
+
+
+function setPicture(source) {
+    const a = "../../data/pictures/image-3.jpg"
+    loadImage(source, img => {
+      window.setPicture(img);
+    });
 }

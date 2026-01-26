@@ -27,6 +27,7 @@ let SMOOTH_ITERATIONS = 2;
 
 function preload() {
   picture = loadImage("../../data/pictures/image-5.jpg");
+  window.getPicture = () => picture;
 }
 
 // =====================================================
@@ -122,7 +123,6 @@ function generateGridPoints(step) {
     }
   }
 }
-
 
 function generateRandomPoints(n) {
   for (let i = 0; i < n; i++) {
@@ -360,3 +360,18 @@ function displaySmoothedEdges() {
     endShape();
   }
 }
+
+
+// =====================================================
+// Interface with App
+// =====================================================
+
+// expose read access
+window.getPicture = function () {
+  return picture;
+};
+
+// expose write access (optional but useful)
+window.setPicture = function (src) {
+  picture = loadImage(src);
+};
