@@ -4,7 +4,8 @@
 
 let points = [];
 let delaunay, voronoi;
-let picture;
+let picture = null;
+let initialized = false;
 
 let isStippling = true;
 
@@ -21,13 +22,19 @@ let CONNECT_DIST = 0;
 // Smoothing
 let SMOOTH_ITERATIONS = 2;
 
-// =====================================================
-// PRELOAD
-// =====================================================
 
-function preload() {
-  picture = loadImage("../../data/pictures/image-5.jpg");
-  window.getPicture = () => picture;
+function initWithPicture() {
+  resizeCanvas(picture.width, picture.height);
+
+  points = [];
+  generateRandomPoints(6000);
+  // generateGridPoints(5)
+  // generateArrangedGridPoints(5)
+
+  delaunay = calculateDelaunay(points);
+  voronoi = delaunay.voronoi([0, 0, width, height]);
+
+  initialized = true;
 }
 
 // =====================================================
@@ -35,15 +42,12 @@ function preload() {
 // =====================================================
 
 function setup() {
-  randomSeed(1234);
-  noiseSeed(1234);
+  const ARBITRARY_RANDOMNESS_SEED = 1234
+  randomSeed(ARBITRARY_RANDOMNESS_SEED);
+  noiseSeed(ARBITRARY_RANDOMNESS_SEED);
 
-  createCanvas(picture.width, picture.height);
+  createCanvas(1024, 512); // Default values
   pixelDensity(1);
-
-  generateRandomPoints(6000);
-  // generateGridPoints(5)
-  // generateArrangedGridPoints(5)
 
   delaunay = calculateDelaunay(points);
   voronoi = delaunay.voronoi([0, 0, width, height]);
@@ -57,6 +61,21 @@ function setup() {
 function draw() {
   background(255);
 
+  if (!picture) {
+    fill(0);
+    noStroke();
+    textAlign(CENTER, CENTER);
+    text("Waiting for image…", width / 2, height / 2);
+    return;
+  }
+
+  console.log(">>>> initialized", initialized)
+
+  if (!initialized) {
+    initWithPicture();
+    return;
+  }
+
   if (isStippling) {
     displayPoints();
     updatePoints();
@@ -64,16 +83,16 @@ function draw() {
     fill(0);
     noStroke();
     text("Click to extract adaptive Voronoi edges", 10, 20);
-
   } else {
     computeDelaunayEdges();
     computeAdaptiveParameters();
     applyHysteresis();
     buildEdgeChains();
-    smoothEdgeChains();        // geometric refinement
+    smoothEdgeChains();
     displaySmoothedEdges();
   }
 }
+
 
 // =====================================================
 // INTERACTION
@@ -371,7 +390,13 @@ window.getPicture = function () {
   return picture;
 };
 
-// expose write access (optional but useful)
+// expose write access
 window.setPicture = function (src) {
-  picture = loadImage(src);
+  initialized = false;
+  isStippling = true;
+
+  loadImage(src, img => {
+    picture = img;
+  });
 };
+

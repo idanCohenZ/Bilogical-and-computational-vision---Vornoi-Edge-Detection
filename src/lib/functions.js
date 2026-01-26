@@ -134,9 +134,7 @@ function runFilter5(imageData) {
     // Add your logic here
 }
 
-
 function setPicture(source) {
-    const a = "../../data/pictures/image-3.jpg"
     loadImage(source, img => {
       window.setPicture(img);
     });
