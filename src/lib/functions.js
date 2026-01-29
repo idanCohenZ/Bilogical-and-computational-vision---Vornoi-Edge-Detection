@@ -2,11 +2,10 @@
 /**
  * Global variables for DOM elements and Contexts
  */
-const D3_CANVAS_ID = 'defaultCanvas0'
 const uploadInput = document.getElementById('upload');
 const uploadArea = document.getElementById('uploadArea');
 const sourceCanvas = document.getElementById('sourceCanvas');
-const outputCanvas = document.getElementById('outputCanvas');
+const outputCanvas = document.getElementById('vornoiCanvas');
 const resetBtn = document.getElementById('resetBtn');
 const downloadBtn = document.getElementById('downloadBtn');
 const sCtx = sourceCanvas.getContext('2d');

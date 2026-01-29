@@ -42,19 +42,30 @@ function initWithPicture() {
 // =====================================================
 
 function setup() {
-  const ARBITRARY_RANDOMNESS_SEED = 1234
+  const ARBITRARY_RANDOMNESS_SEED = 1234;
   randomSeed(ARBITRARY_RANDOMNESS_SEED);
   noiseSeed(ARBITRARY_RANDOMNESS_SEED);
 
-  canvas = createCanvas(1024, 512); // Default values
-  canvas.id("vornoi-canvas");
-  canvas.parent("result-canvas")
+  const oldCanvas = document.getElementById("vornoiCanvas");
+
+  const canvasWidth = oldCanvas?.width ?? 1024;
+  const canvasHeight = oldCanvas?.height ?? 256;
+
+  const newCanvas = createCanvas(canvasWidth, canvasHeight);
+  newCanvas.id("vornoiCanvas");
+
+  if (oldCanvas) {
+    oldCanvas.replaceWith(newCanvas.elt);
+  } else {
+    newCanvas.parent("result-canvas");
+  }
 
   pixelDensity(1);
 
   delaunay = calculateDelaunay(points);
-  voronoi = delaunay.voronoi([0, 0, width, height]);
+  voronoi = delaunay.voronoi([0, 0, canvasWidth, canvasHeight]);
 }
+
 
 
 // =====================================================
