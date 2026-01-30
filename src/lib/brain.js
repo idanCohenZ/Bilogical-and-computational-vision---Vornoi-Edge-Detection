@@ -49,7 +49,7 @@ function setup() {
   const oldCanvas = document.getElementById("vornoiCanvas");
 
   const canvasWidth = oldCanvas?.width ?? 1024;
-  const canvasHeight = oldCanvas?.height ?? 256;
+  const canvasHeight = oldCanvas?.height ?? 512;
 
   const newCanvas = createCanvas(canvasWidth, canvasHeight);
   newCanvas.id("vornoiCanvas");
@@ -73,15 +73,10 @@ function setup() {
 // =====================================================
 
 function draw() {
-  background(255);
-
   if (!picture) {
-    fill(0);
-    noStroke();
-    textAlign(CENTER, CENTER);
-    text("Waiting for image…", width / 2, height / 2);
     return;
   }
+  else background(255);
 
   if (!initialized) {
     initWithPicture();
