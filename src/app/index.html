@@ -3,49 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>head_one</title>
+    <title>מעבד קצוות וורונוי</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3-delaunay@6"></script>
 </head>
-<body style="flex-direction: column;">
-    <h1>head_two</h1>
-    <div class="app-container">
-        <div class="preview-grid">
-            <div class="canvas-card-headline">
-                <label>original image</label>
-                <div class="canvas-card" id="dropZone">
-                    <div style="width: 100%">
-                        <button id="resetBtn" class="reset-btn" onclick="resetImage()">&times;</button>
-                    </div>
-                    <div id="uploadArea" class="upload-area" onclick="document.getElementById('upload').click()">
-                        <p>לחץ כאן להעלאת תמונה</p>
-                        <span class="file-format">JPG, PNG, WEBP</span>
+<body style="display: flex; flex-direction: column; align-items: center; background: #fafafa; font-family: system-ui;">
+
+    <h1>עיבוד תמונה אדפטיבי</h1>
+
+    <div class="app-container" style="width: 90%; max-width: 1200px;">
+        <div class="preview-grid" style="display: flex; gap: 20px; justify-content: center;">
+            
+            <div class="canvas-card-headline" style="flex: 1;">
+                <label>תמונה מקורית</label>
+                <div class="canvas-card" id="dropZone" style="border: 2px dashed #ccc; height: 450px; background: #fff; position: relative;">
+                    <button id="resetBtn" style="position: absolute; top: 10px; right: 10px; display: none;" onclick="resetImage()">✖ איפוס</button>
+                    <div id="uploadArea" onclick="document.getElementById('upload').click()" style="text-align: center; margin-top: 150px; cursor: pointer;">
+                        <p>לחץ להעלאת תמונה</p>
                         <input type="file" id="upload" accept="image/*" style="display: none;">
                     </div>
-                    <canvas id="sourceCanvas" style="display: none;"></canvas>
+                    <canvas id="sourceCanvas" style="max-width: 100%; height: auto; display: none; margin: auto;"></canvas>
                 </div>
             </div>
-            <div class="canvas-card-headline">
-                <label>output image</label>
-                <div class="canvas-card" id="result-canvas">
-                    <div style="width: 100%">
-                        <button id="downloadBtn" class="download-btn" onclick="downloadImage()">↓</button>
+
+            <div class="canvas-card-headline" style="flex: 1;">
+                <label>תוצאה</label>
+                <div class="canvas-card" id="result-canvas" style="border: 2px solid #eee; height: 450px; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden;">
                     </div>
-                    <canvas id="vornoiCanvas"></canvas>
-                </div>
             </div>
         </div>
-        <div class="buttons-group">
-            <button onclick="applyEffect('filter1')">פילטר 1</button>
-            <button onclick="applyEffect('filter2')">פילטר 2</button>
-            <button onclick="applyEffect('filter3')">פילטר 3</button>
-            <button onclick="applyEffect('filter4')">פילטר 4</button>
-            <button onclick="applyEffect('filter5')">פילטר 5</button>
+
+        <div class="action-bar" style="text-align: center; margin: 20px 0;">
+             <button id="downloadBtn" style="display: none; background: #2196F3; color: white; padding: 12px 30px; border: none; border-radius: 25px; font-size: 1.1em; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onclick="downloadImage()">הורדת התוצאה למחשב ↓</button>
+        </div>
+
+        <div class="buttons-group" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 30px;">
+            <button onclick="applyEffect('filter1')">שלב 1: Voronoi</button>
+            <button onclick="applyEffect('filter2')">שלב 2: Stippling</button>
+            <button onclick="applyEffect('filter3')">שלב 3: Edge Logic</button>
+            <button onclick="applyEffect('filter4')">שלב 4: החלקה</button>
+            <button onclick="applyEffect('filter5')" style="background: #9c27b0; color: white;">השוואת Sobel</button>
         </div>
     </div>
 
-<script src="../lib/functions.js"></script>
-<script src="../lib/brain.js"></script>
+    <script src="../lib/functions.js"></script>
+    <script src="../lib/brain.js"></script>
 </body>
 </html>
