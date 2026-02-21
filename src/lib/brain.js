@@ -72,7 +72,7 @@ function renderCurrentStage() {
 window.goToStage1 = () => { currentStage = 'VORONOI_INITIAL'; };
 window.goToStage2 = () => { currentStage = 'STIPPLING'; stipplingStartTime = millis(); };
 window.goToStage3 = () => { if (finalEdges.length === 0) runEdgePipeline(); currentStage = 'HYSTERESIS'; };
-window.goToStage4 = () => { currentStage = 'SMOOTHING'; };
+window.goToStage4 = () => { window.goToStage3(); currentStage = 'SMOOTHING'; };
 window.showSobel = () => { currentStage = 'SOBEL'; };
 
 function runEdgePipeline() {
