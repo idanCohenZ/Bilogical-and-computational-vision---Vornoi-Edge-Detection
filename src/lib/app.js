@@ -31,8 +31,16 @@ uploadInput.addEventListener('change', function (e) {
 function resetImage() {
     location.reload(); 
 }
-
 function applyEffect(effectName) {
+    // 1. Grab the metrics panel
+    const metricsPanel = document.getElementById('metrics-panel');
+    
+    // 2. Hide it if we are clicking anything OTHER than the Sobel comparison
+    if (metricsPanel && effectName !== 'filter5') {
+        metricsPanel.style.display = 'none';
+    }
+
+    // 3. Run the standard logic
     switch (effectName) {
         case 'filter1': window.goToStage1(); break;
         case 'filter2': window.goToStage2(); break;

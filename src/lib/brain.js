@@ -279,3 +279,92 @@ window.setPicture = (src) => {
   initialized = false;
   loadImage(src, img => { picture = img; initWithPicture(); });
 };
+
+
+function calculateMetrics() {
+  if (!picture || !sobelImage) return;
+
+  // --- 1. Calculate Your Graph Metrics ---
+  let totalChainLength = 0;
+  let chainCount = edgeChains.length;
+  
+  for (let chain of edgeChains) {
+    let currentLength = 0;
+    for (let i = 0; i < chain.length - 1; i++) {
+      currentLength += p5.Vector.dist(chain[i], chain[i+1]);
+    }
+    totalChainLength += currentLength;
+  }
+  
+  let avgContinuity = chainCount > 0 ? (totalChainLength / chainCount).toFixed(1) : 0;
+  
+  // Your isolated noise is naturally 0 because buildEdgeChains drops chains <= 2
+  let graphIsolatedNoise = 0; 
+
+  // --- 2. Calculate Sobel Metrics ---
+  let sobelPixelCount = 0;
+  let sobelIsolatedNoise = 0;
+  let sobelThreshold = 100; // Edge threshold
+  
+  sobelImage.loadPixels();
+  let w = sobelImage.width;
+  let h = sobelImage.height;
+
+  for (let y = 1; y < h - 1; y++) {
+    for (let x = 1; x < w - 1; x++) {
+      let i = (x + y * w) * 4;
+      
+      if (sobelImage.pixels[i] > sobelThreshold) {
+        sobelPixelCount++;
+        
+        // Check 8-way neighbors to see if it's an isolated noise pixel
+        let strongNeighbors = 0;
+        for (let ny = -1; ny <= 1; ny++) {
+          for (let nx = -1; nx <= 1; nx++) {
+            if (nx === 0 && ny === 0) continue;
+            let ni = ((x + nx) + (y + ny) * w) * 4;
+            if (sobelImage.pixels[ni] > sobelThreshold) strongNeighbors++;
+          }
+        }
+        // If it has 1 or 0 strong neighbors, it's isolated noise/fragmentation
+        if (strongNeighbors < 2) {
+            sobelIsolatedNoise++;
+        }
+      }
+    }
+  }
+
+  // --- 3. Update the DOM ---
+  
+  // Update Values
+  document.getElementById('metric-cont-graph').innerText = avgContinuity + " px";
+  document.getElementById('metric-sparse-graph').innerText = Math.round(totalChainLength) + " (אורך)";
+  document.getElementById('metric-noise-graph').innerText = graphIsolatedNoise;
+  
+  document.getElementById('metric-sparse-sobel').innerText = sobelPixelCount + " (פיקסלים)";
+  document.getElementById('metric-noise-sobel').innerText = sobelIsolatedNoise;
+  
+  // Enforce Colors (Green for yours, Red for Sobel)
+  const graphIds = ['metric-cont-graph', 'metric-sparse-graph', 'metric-noise-graph'];
+  const sobelIds = ['metric-cont-sobel', 'metric-sparse-sobel', 'metric-noise-sobel'];
+  
+  graphIds.forEach(id => {
+      let el = document.getElementById(id);
+      if(el) el.style.color = "#2e7d32"; 
+  });
+  
+  sobelIds.forEach(id => {
+      let el = document.getElementById(id);
+      if(el) el.style.color = "#c62828"; 
+  });
+
+  // Show the table
+  document.getElementById('metrics-panel').style.display = 'block';
+}
+
+// Update your existing showSobel function to trigger the calculation
+window.showSobel = () => { 
+  currentStage = 'SOBEL'; 
+  // Wait a tiny bit to ensure the canvas renders before blocking the thread with DOM updates
+  setTimeout(calculateMetrics, 50);
+};

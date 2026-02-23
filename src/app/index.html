@@ -47,6 +47,45 @@
             <button onclick="applyEffect('filter4')">שלב 4: החלקה</button>
             <button onclick="applyEffect('filter5')" style="background: #9c27b0; color: white;">השוואת Sobel</button>
         </div>
+       <div id="metrics-panel" style="display: none; width: 100%; margin-top: 20px; background: #fff; padding: 20px; border: 2px solid #9c27b0; border-radius: 8px; box-sizing: border-box; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+            <h3 style="text-align: center; color: #9c27b0; margin-top: 0;">השוואת ביצועים: גרף וורונוי מול סובל</h3>
+            <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 1.1em; color: #333;">
+                <thead>
+                    <tr style="background: #f4f4f4;">
+                        <th style="padding: 12px; border: 1px solid #ddd; width: 25%;">מדד (Metric)</th>
+                        <th style="padding: 12px; border: 1px solid #ddd; color: #2e7d32; width: 25%;">השיטה שלך (Voronoi)</th>
+                        <th style="padding: 12px; border: 1px solid #ddd; color: #c62828; width: 25%;">Vanilla Sobel</th>
+                        <th style="padding: 12px; border: 1px solid #ddd; background: #e3f2fd; color: #1565c0; width: 25%;">מדד אידיאלי (Reference)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">פורמט מבני<br><span style="font-size: 0.8em; font-weight: normal;">(Output Format)</span></td>
+                        <td id="metric-format-graph" style="padding: 12px; border: 1px solid #ddd; color: #2e7d32; font-weight: bold;">וקטורי (רציף)</td>
+                        <td id="metric-format-sobel" style="padding: 12px; border: 1px solid #ddd; color: #c62828;">רסטר (פיקסלים)</td>
+                        <td style="padding: 12px; border: 1px solid #ddd; background: #f8fbff; color: #555; font-size: 0.9em;"><b>וקטורי.</b> מאפשר הגדלה ללא איבוד איכות (Pixelation).</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">אורך קו מתאר ממוצע<br><span style="font-size: 0.8em; font-weight: normal;">(Contour Continuity)</span></td>
+                        <td id="metric-cont-graph" style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">-</td>
+                        <td id="metric-cont-sobel" style="padding: 12px; border: 1px solid #ddd;">1 px (ללא חיבור)</td>
+                        <td style="padding: 12px; border: 1px solid #ddd; background: #f8fbff; color: #555; font-size: 0.9em;"><b>גבוה ככל האפשר.</b> מעיד על קווים רציפים ולא מקוטעים.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">סך הכל קצוות / עובי<br><span style="font-size: 0.8em; font-weight: normal;">(Density / Sparsity)</span></td>
+                        <td id="metric-sparse-graph" style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">-</td>
+                        <td id="metric-sparse-sobel" style="padding: 12px; border: 1px solid #ddd;">-</td>
+                        <td style="padding: 12px; border: 1px solid #ddd; background: #f8fbff; color: #555; font-size: 0.9em;"><b>נמוך.</b> קצוות צריכים להיות דקים ומדויקים (Sub-pixel), ללא הילה עבה.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">חלקיקי רעש מבודדים<br><span style="font-size: 0.8em; font-weight: normal;">(Isolated Artifacts)</span></td>
+                        <td id="metric-noise-graph" style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">-</td>
+                        <td id="metric-noise-sobel" style="padding: 12px; border: 1px solid #ddd;">-</td>
+                        <td style="padding: 12px; border: 1px solid #ddd; background: #f8fbff; color: #555; font-size: 0.9em;"><b>0 (אפס).</b> מעיד על חסינות לרעשי טקסטורה (Salt & Pepper).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script src="../lib/app.js"></script>
