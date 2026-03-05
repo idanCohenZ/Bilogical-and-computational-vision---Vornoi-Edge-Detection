@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מעבד קצוות וורונוי</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-delaunay@6"></script>
+    <link rel="icon" type="image/x-icon" href="../../assets/toolbar-logo-circle.png">
+
+</head>
+<body style="display: flex; flex-direction: column; align-items: center; background: #fafafa; font-family: system-ui;">
+
+    <h1>עיבוד תמונה אדפטיבי</h1>
+
+    <div class="app-container" style="width: 90%; max-width: 1200px;">
+        <div class="preview-grid" style="display: flex; gap: 20px; justify-content: center;">
+            
+            <div class="canvas-card-headline" style="flex: 1;">
+                <label>תמונה מקורית</label>
+                <div class="canvas-card" id="dropZone" style="border: 2px dashed #ccc; height: 450px; background: #fff; position: relative;">
+                    <button id="resetBtn" style="position: absolute; top: 10px; right: 10px; display: none;" onclick="resetImage()">✖ איפוס</button>
+                    <div id="uploadArea" onclick="document.getElementById('upload').click()" style="text-align: center; margin-top: 150px; cursor: pointer;">
+                        <p>לחץ להעלאת תמונה</p>
+                        <input type="file" id="upload" accept="image/*" style="display: none;">
+                    </div>
+                    <canvas id="sourceCanvas" style="max-width: 100%; height: auto; display: none; margin: auto;"></canvas>
+                </div>
+            </div>
+
+            <div class="canvas-card-headline" style="flex: 1;">
+                <label>תוצאה</label>
+                <div class="canvas-card" id="result-canvas" style="border: 2px solid #eee; height: 450px; background: #fff; display: flex; align-items: center; justify-content: center; overflow: hidden;">
+                    </div>
+            </div>
+        </div>
+
+        <div class="action-bar" style="text-align: center; margin: 20px 0;">
+             <button id="downloadBtn" style="display: none; background: #2196F3; color: white; padding: 12px 30px; border: none; border-radius: 25px; font-size: 1.1em; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" onclick="downloadImage()">הורדת התוצאה למחשב ↓</button>
+        </div>
+
+        <div class="buttons-group" style="display: flex; gap: 10px; justify-content: center; margin-bottom: 30px;">
+            <button onclick="applyEffect('filter1')">שלב 1: Voronoi</button>
+            <button onclick="applyEffect('filter2')">שלב 2: Stippling</button>
+            <button onclick="applyEffect('filter3')">שלב 3: Edge Logic</button>
+            <button onclick="applyEffect('filter4')">שלב 4: החלקה</button>
+            <button onclick="applyEffect('filter5')" style="background: #9c27b0; color: white;">השוואת Sobel</button>
+        </div>
+       <div id="metrics-panel" style="display: none; width: 100%; margin-top: 20px; background: #fff; padding: 20px; border: 2px solid #9c27b0; border-radius: 8px; box-sizing: border-box; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
+            <h3 style="text-align: center; color: #9c27b0; margin-top: 0;">השוואת ביצועים: גרף וורונוי מול סובל</h3>
+            <table style="width: 100%; border-collapse: collapse; text-align: center; font-size: 1.1em; color: #333;">
+                <thead>
+                    <tr style="background: #f4f4f4;">
+                        <th style="padding: 12px; border: 1px solid #ddd; width: 25%;">מדד (Metric)</th>
+                        <th style="padding: 12px; border: 1px solid #ddd; color: #2e7d32; width: 25%;">השיטה שלך (Voronoi)</th>
+                        <th style="padding: 12px; border: 1px solid #ddd; color: #c62828; width: 25%;">Vanilla Sobel</th>
+                        <th style="padding: 12px; border: 1px solid #ddd; background: #e3f2fd; color: #1565c0; width: 25%;">מדד אידיאלי (Reference)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">פורמט מבני<br><span style="font-size: 0.8em; font-weight: normal;">(Output Format)</span></td>
+                        <td id="metric-format-graph" style="padding: 12px; border: 1px solid #ddd; color: #2e7d32; font-weight: bold;">וקטורי (רציף)</td>
+                        <td id="metric-format-sobel" style="padding: 12px; border: 1px solid #ddd; color: #c62828;">רסטר (פיקסלים)</td>
+                        <td style="padding: 12px; border: 1px solid #ddd; background: #f8fbff; color: #555; font-size: 0.9em;"><b>וקטורי.</b> מאפשר הגדלה ללא איבוד איכות (Pixelation).</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">אורך קו מתאר ממוצע<br><span style="font-size: 0.8em; font-weight: normal;">(Contour Continuity)</span></td>
+                        <td id="metric-cont-graph" style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">-</td>
+                        <td id="metric-cont-sobel" style="padding: 12px; border: 1px solid #ddd;">1 px (ללא חיבור)</td>
+                        <td style="padding: 12px; border: 1px solid #ddd; background: #f8fbff; color: #555; font-size: 0.9em;"><b>גבוה ככל האפשר.</b> מעיד על קווים רציפים ולא מקוטעים.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">סך הכל קצוות / עובי<br><span style="font-size: 0.8em; font-weight: normal;">(Density / Sparsity)</span></td>
+                        <td id="metric-sparse-graph" style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">-</td>
+                        <td id="metric-sparse-sobel" style="padding: 12px; border: 1px solid #ddd;">-</td>
+                        <td style="padding: 12px; border: 1px solid #ddd; background: #f8fbff; color: #555; font-size: 0.9em;"><b>נמוך.</b> קצוות צריכים להיות דקים ומדויקים (Sub-pixel), ללא הילה עבה.</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">חלקיקי רעש מבודדים<br><span style="font-size: 0.8em; font-weight: normal;">(Isolated Artifacts)</span></td>
+                        <td id="metric-noise-graph" style="padding: 12px; border: 1px solid #ddd; font-weight: bold;">-</td>
+                        <td id="metric-noise-sobel" style="padding: 12px; border: 1px solid #ddd;">-</td>
+                        <td style="padding: 12px; border: 1px solid #ddd; background: #f8fbff; color: #555; font-size: 0.9em;"><b>0 (אפס).</b> מעיד על חסינות לרעשי טקסטורה (Salt & Pepper).</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../lib/app.js"></script>
+    <script src="../lib/brain.js"></script>
+</body>
+</html>
